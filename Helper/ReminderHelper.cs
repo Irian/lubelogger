@@ -95,7 +95,8 @@ namespace CarCareTracker.Helper
                     Metric = reminder.Metric,
                     UserMetric = reminder.Metric,
                     IsRecurring = reminder.IsRecurring,
-                    Tags = reminder.Tags
+                    Tags = reminder.Tags,
+                    Files = reminder.Files
                 };
                 if (reminder.Metric == ReminderMetric.Both)
                 {

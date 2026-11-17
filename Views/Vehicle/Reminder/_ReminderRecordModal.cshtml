@@ -71,6 +71,11 @@
                     <label for="reminderNotes">@translator.Translate(userLanguage,"Notes(optional)")<a class="link-underline link-underline-opacity-0" onclick="showLinks(this)"><i class="bi bi-markdown ms-2"></i></a></label>
                     <textarea id="reminderNotes" class="form-control" rows="5">@Model.Notes</textarea>
                     <div>
+                        @await Html.PartialAsync("_UploadedFiles", Model.Files)
+                        @await Html.PartialAsync("_FileUploader", Model.Files.Any())
+                    </div>
+                    <div id="filesPendingUpload"></div>
+                    <div>
                         <div class="form-check form-switch form-check-inline">
                             <input class="form-check-input" type="checkbox" onChange="enableRecurring()" role="switch" id="reminderIsRecurring" checked="@Model.IsRecurring">
                             <label class="form-check-label" for="reminderIsRecurring">@translator.Translate(userLanguage, "Is Recurring")</label>

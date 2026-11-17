@@ -286,7 +286,15 @@ function getAndValidateReminderRecordValues() {
         customMileageInterval: customMileageInterval,
         customMonthInterval: customMonthInterval,
         customMonthIntervalUnit: customMonthIntervalUnit,
-        tags: reminderTags
+        tags: reminderTags,
+        files: uploadedFiles
+    }
+}
+var reminderUploadedFiles = undefined;
+function restoreReminderUploadedFiles() {
+    if (reminderUploadedFiles != undefined) {
+        uploadedFiles = reminderUploadedFiles;
+        reminderUploadedFiles = undefined;
     }
 }
 function createPlanRecordFromReminder(reminderRecordId) {
@@ -303,8 +311,11 @@ function createPlanRecordFromReminder(reminderRecordId) {
         vehicleId: formValues.vehicleId,
         reminderRecordId: reminderRecordId,
         description: formValues.description,
-        notes: formValues.notes
+        notes: formValues.notes,
+        files: formValues.files.map(x => ({ name: x.name, location: x.location }))
     };
+    //the plan modal brings its own attachment list, hold on to the reminder's so it can be restored afterwards.
+    reminderUploadedFiles = uploadedFiles;
     $.post('/Vehicle/GetAddPlanRecordPartialView', { planModel: planModelInput }, function (data) {
         $("#reminderRecordModal").modal("hide");
         $("#planRecordModalContent").html(data);

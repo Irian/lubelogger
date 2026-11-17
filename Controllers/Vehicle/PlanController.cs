@@ -163,6 +163,14 @@ namespace CarCareTracker.Controllers
                     }
                 }
             }
+            //attach the current attachments of any linked reminders.
+            foreach (UploadedFiles reminderFile in GetReminderAttachments(existingRecord.ReminderRecordId, existingRecord.ReminderRecordIds))
+            {
+                if (!existingRecord.Files.Any(x => x.Location == reminderFile.Location))
+                {
+                    existingRecord.Files.Add(reminderFile);
+                }
+            }
             //populate createdDate
             existingRecord.DateCreated = DateTime.Now.ToString("G");
             existingRecord.DateModified = DateTime.Now.ToString("G");
@@ -177,6 +185,31 @@ namespace CarCareTracker.Controllers
             }
             var result = _planRecordDataAccess.SavePlanRecordToVehicle(existingRecord.ToPlanRecord());
             return Json(OperationResponse.Conditional(result, "Plan Record Added", StaticHelper.GenericErrorMessage));
+        }
+        private List<UploadedFiles> GetReminderAttachments(int reminderRecordId, List<int> reminderRecordIds)
+        {
+            var reminderIds = new List<int>(reminderRecordIds ?? new List<int>());
+            if (reminderRecordId != default)
+            {
+                reminderIds.Add(reminderRecordId);
+            }
+            var results = new List<UploadedFiles>();
+            foreach (int reminderId in reminderIds.Distinct())
+            {
+                var reminder = _reminderRecordDataAccess.GetReminderRecordById(reminderId);
+                if (reminder is null || reminder.Id == default)
+                {
+                    continue;
+                }
+                foreach (UploadedFiles reminderFile in reminder.Files)
+                {
+                    if (!results.Any(x => x.Location == reminderFile.Location))
+                    {
+                        results.Add(new UploadedFiles { Name = reminderFile.Name, Location = reminderFile.Location });
+                    }
+                }
+            }
+            return results;
         }
         [HttpPost]
         public IActionResult ConvertPlanRecordToPlanRecordTemplate(int planRecordId)
@@ -231,6 +264,12 @@ namespace CarCareTracker.Controllers
                     }
                     planRecordTemplate.ReminderRecordIds = existingRecord.ReminderRecordIds;
                 }
+            }
+            //attachments that came from linked reminders are not stored in the template, the latest ones are attached whenever the template is used.
+            var reminderFileLocations = GetReminderAttachments(planRecordTemplate.ReminderRecordId, planRecordTemplate.ReminderRecordIds).Select(x => x.Location).ToList();
+            if (reminderFileLocations.Any())
+            {
+                planRecordTemplate.Files = planRecordTemplate.Files.Where(x => !reminderFileLocations.Contains(x.Location)).ToList();
             }
             if (existingRecord.RequisitionHistory.Any())
             {
