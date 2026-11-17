@@ -19,6 +19,7 @@
         public ReminderMonthInterval ReminderMonthInterval { get; set; } = ReminderMonthInterval.OneYear;
         public ReminderMetric Metric { get; set; } = ReminderMetric.Date;
         public List<string> Tags { get; set; } = new List<string>();
+        public List<UploadedFiles> Files { get; set; } = new List<UploadedFiles>();
         public ReminderRecord ToReminderRecord()
         {
             return new ReminderRecord
@@ -39,7 +40,8 @@
                 CustomMonthInterval = CustomMonthInterval,
                 CustomMonthIntervalUnit = CustomMonthIntervalUnit,
                 Notes = Notes,
-                Tags = Tags
+                Tags = Tags,
+                Files = Files
             };
         }
         public bool CreatedFromRecord { get; set; } = false;

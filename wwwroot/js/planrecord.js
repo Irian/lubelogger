@@ -71,6 +71,7 @@ function hideAddPlanRecordModal() {
     $('#planRecordModal').modal('hide');
         if (getPlanRecordModelData().createdFromReminder) {
             //show reminder Modal
+            restoreReminderUploadedFiles();
             $("#reminderRecordModal").modal("show");
         }
         if (getPlanRecordModelData().isTemplate) {

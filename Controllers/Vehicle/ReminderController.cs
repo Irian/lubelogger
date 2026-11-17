@@ -117,6 +117,8 @@ namespace CarCareTracker.Controllers
             {
                 return Json(OperationResponse.Failed("Access Denied"));
             }
+            //move files from temp.
+            reminderRecord.Files = reminderRecord.Files.Select(x => { return new UploadedFiles { Name = x.Name, Location = _fileHelper.MoveFileFromTemp(x.Location, "documents/") }; }).ToList();
             var result = _reminderRecordDataAccess.SaveReminderRecordToVehicle(reminderRecord.ToReminderRecord());
             if (result)
             {
@@ -130,6 +132,11 @@ namespace CarCareTracker.Controllers
             if (reminderModel is null)
             {
                 reminderModel = new ReminderRecordInputViewModel();
+            }
+            if (reminderModel.CreatedFromRecord)
+            {
+                //the source record posts its own attachments along, those belong to the record and not the reminder.
+                reminderModel.Files = new List<UploadedFiles>();
             }
             if (reminderModel.VehicleId != default)
             {
@@ -169,6 +176,7 @@ namespace CarCareTracker.Controllers
                 CustomMonthInterval = result.CustomMonthInterval,
                 CustomMonthIntervalUnit = result.CustomMonthIntervalUnit,
                 Tags = result.Tags,
+                Files = result.Files,
                 UseHours = vehicleUseHours
             };
             return PartialView("Reminder/_ReminderRecordModal", convertedResult);

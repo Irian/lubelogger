@@ -372,7 +372,7 @@ function saveRecordedOdometer() {
         $.post('/Files/UploadCoordinates', { coordinates: tripCoordinates }, function (response) {
             uploadedFiles.push(response);
             $.post('/Vehicle/GetFilesPendingUpload', { uploadedFiles: uploadedFiles }, function (viewData) {
-                $("#filesPendingUpload").html(viewData);
+                getFilesPendingUploadContainer().html(viewData);
                 tripCoordinates = ["Latitude,Longitude"];
             });
         });

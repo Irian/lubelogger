@@ -638,6 +638,11 @@ function updateAggregateLabels() {
     countLabel.text(`${countLabel.text().split(':')[0]}: ${newCount}`);
 }
 
+function getFilesPendingUploadContainer() {
+    //more than one record modal can be loaded at once(e.g.: a reminder opened from a record), use the one that is open.
+    var openContainer = $(".modal.show #filesPendingUpload");
+    return openContainer.length > 0 ? openContainer.last() : $("#filesPendingUpload").first();
+}
 function uploadVehicleFilesAsync(event) {
     let formData = new FormData();
     var files = event.files;
@@ -658,7 +663,7 @@ function uploadVehicleFilesAsync(event) {
         if (response.length > 0) {
             uploadedFiles.push.apply(uploadedFiles, response);
             $.post('/Vehicle/GetFilesPendingUpload', { uploadedFiles: uploadedFiles }, function (viewData) {
-                $("#filesPendingUpload").html(viewData);
+                getFilesPendingUploadContainer().html(viewData);
             });
         }
     }).fail(() => {
@@ -691,19 +696,24 @@ function uploadVehicleLinksAsync(event) {
         if (result.isConfirmed) {
             uploadedFiles.push({ name: result.value.newLinkName, location: result.value.newLinkLocation, isPending: true });
             $.post('/Vehicle/GetFilesPendingUpload', { uploadedFiles: uploadedFiles }, function (viewData) {
-                $("#filesPendingUpload").html(viewData);
+                getFilesPendingUploadContainer().html(viewData);
             });
         }
     });
 }
 function deleteFileFromUploadedFiles(fileLocation, event) {
+    //scope to the modal the file was listed in, as more than one record modal can be loaded at once.
+    var fileContainer = $(event).closest('.modal-content');
+    if (fileContainer.length == 0) {
+        fileContainer = $(document);
+    }
     event.parentElement.parentElement.parentElement.remove();
     uploadedFiles = uploadedFiles.filter(x => x.location != fileLocation);
-    if ($("#documentsPendingUploadList > li").length == 0) {
-        $("#documentsPendingUploadLabel").text("");
+    if (fileContainer.find("#documentsPendingUploadList > li").length == 0) {
+        fileContainer.find("#documentsPendingUploadLabel").text("");
     }
-    if ($("#uploadedDocumentsList > li").length == 0) {
-        $("#uploadedDocumentsLabel").text("");
+    if (fileContainer.find("#uploadedDocumentsList > li").length == 0) {
+        fileContainer.find("#uploadedDocumentsLabel").text("");
     }
 }
 function editFileName(fileLocation, event) {

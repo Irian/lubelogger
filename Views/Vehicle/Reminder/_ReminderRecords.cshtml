@@ -98,6 +98,12 @@
                                 <label class="form-check-label stretched-link" for="chkCol_Notes">@translator.Translate(userLanguage, "Notes")</label>
                             </div>
                         </li>
+                        <li class="dropdown-item">
+                            <div class="list-group-item">
+                                <input class="form-check-input col-visible-toggle" data-column-toggle='attachments' onChange="showTableColumns(this, 'ReminderRecord')" type="checkbox" id="chkCol_Attachment">
+                                <label class="form-check-label stretched-link" for="chkCol_Attachment">@translator.Translate(userLanguage, "Attachments")</label>
+                            </div>
+                        </li>
                         @if(hasRefresh){
                             <li class="dropdown-item">
                                 <div class="list-group-item">
@@ -135,6 +141,7 @@
                     <th scope="col" data-column="duedistance" style="display:none;" class="col-2 flex-grow-1 flex-shrink-1 text-truncate">@translator.Translate(userLanguage, "Due Distance")</th>
                     <th scope="col" data-column="description" class="flex-grow-1 flex-shrink-1 text-truncate @(hasRefresh ? "col-3" : "col-4")">@translator.Translate(userLanguage, "Description")</th>
                     <th scope="col" data-column="notes" class="flex-grow-1 flex-shrink-1 col-2 text-truncate">@translator.Translate(userLanguage, "Notes")</th>
+                    <th scope="col" data-column="attachments" style="display:none;" class="col-1 flex-grow-1 flex-shrink-1 text-truncate">@translator.Translate(userLanguage, "Attachments")</th>
                     @if (hasRefresh)
                     {
                         <th scope="col" data-column="done" class="flex-grow-1 flex-shrink-1 col-2 text-truncate hideOnPrint">@translator.Translate(userLanguage, "Done")</th>
@@ -192,6 +199,7 @@
                         </td>
                             <td data-label="@translator.Translate(userLanguage, "Description")" data-column="description" class="flex-grow-1 flex-shrink-1 text-truncate @(hasRefresh ? "col-3" : "col-4")">@reminderRecord.Description</td>
                             <td data-label="@translator.Translate(userLanguage, "Notes")" data-column="notes" class="flex-grow-1 flex-shrink-1 col-2 @noteColumnStyle">@StaticHelper.TruncateStrings(reminderRecord.Notes, noteColumnLength)</td>
+                            <td data-label="@translator.Translate(userLanguage, "Attachments")" class="col-1 flex-grow-1 flex-shrink-1 text-truncate" style="display:none;" data-column="attachments">@await Html.PartialAsync("_AttachmentColumn", reminderRecord.Files)</td>
                         @if (hasRefresh)
                         {
                                 <td data-label="@translator.Translate(userLanguage, "Done")" class="flex-grow-1 flex-shrink-1 col-2 text-truncate hideOnPrint" data-column="done">
